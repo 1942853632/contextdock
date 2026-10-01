@@ -1,0 +1,3 @@
+// @vitest-environment jsdom
+import { describe, expect, it } from 'vitest'; import { extractMarkdown } from '../src/extractor';
+describe('DOM extractor', () => { it('keeps readable content and removes navigation', () => { const doc = document.implementation.createHTMLDocument('x'); doc.body.innerHTML = '<nav>Menu</nav><main><h1>Title</h1><p>Hello</p><pre>const x = 1</pre></main><script>alert(1)</script>'; const output = extractMarkdown(doc); expect(output).toContain('# Title'); expect(output).toContain('Hello'); expect(output).not.toContain('Menu'); expect(output).toContain('const x = 1'); }); });

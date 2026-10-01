@@ -1,0 +1,1 @@
+{"name":"contextdock","version":"0.1.0","private":true,"type":"module","scripts":{"build":"tsc -p tsconfig.build.json && node scripts/build.mjs","test":"vitest run","lint":"tsc --noEmit"},"devDependencies":{"@types/chrome":"^0.0.270","@types/node":"^22.0.0","typescript":"^5.6.3","vitest":"^2.1.5","jsdom":"^25.0.0"}}
