@@ -1,3 +1,6 @@
+import { sanitize } from './sanitizer';
+import { analyzeQuality } from './quality';
+
 export type PageSnapshot = { url: string; title: string; markdown: string; selected: boolean; capturedAt: string };
 export type RedactionCategory = 'email' | 'phone' | 'bearer' | 'jwt' | 'apiKey' | 'privateKey';
 export type RedactionReport = { total: number } & Record<RedactionCategory, number>;
@@ -38,19 +41,9 @@ export function normalizeLines(markdown: string): { lines: string[]; duplicateRa
   return { lines: unique, duplicateRatio: lines.length ? (lines.length - unique.length) / lines.length : 0 };
 }
 
-const emptyRedactions = (): RedactionReport => ({ total: 0, email: 0, phone: 0, bearer: 0, jwt: 0, apiKey: 0, privateKey: 0 });
-const basicQuality = (text: string, sections: string[], duplicateRatio: number): QualityReport => ({
-  score: text.length ? 100 : 0,
-  characterCount: text.length,
-  sectionCount: sections.length,
-  duplicateRatio,
-  headingCount: (text.match(/^#{1,4} /gm) ?? []).length,
-  codeBlockCount: (text.match(/```/g) ?? []).length / 2,
-  warnings: text ? [] : ['empty-content']
-});
-
 export function buildPack(snapshot: PageSnapshot, maxChars = 12000, processed?: ProcessedContent): ContextPack {
-  const source = processed?.markdown ?? snapshot.markdown;
+  const sanitized = processed?.redactions ? { text: processed.markdown, report: processed.redactions } : sanitize(processed?.markdown ?? snapshot.markdown);
+  const source = sanitized.text;
   const normalized = normalizeLines(source);
   const sections: string[] = [];
   let current = '';
@@ -65,8 +58,8 @@ export function buildPack(snapshot: PageSnapshot, maxChars = 12000, processed?: 
     schemaVersion: 1,
     title: snapshot.title || 'Untitled page', sourceUrl: snapshot.url, capturedAt: snapshot.capturedAt, selected: snapshot.selected,
     sections, tokenEstimate: estimateTokens(text), contentHash: stableHash(text),
-    quality: processed?.quality ?? basicQuality(text, sections, processed?.duplicateRatio ?? normalized.duplicateRatio),
-    redactions: processed?.redactions ?? emptyRedactions()
+    quality: processed?.quality ?? analyzeQuality(text, normalized.duplicateRatio),
+    redactions: sanitized.report
   };
 }
 
