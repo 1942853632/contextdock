@@ -25,6 +25,16 @@ npm run lint
 npm run build
 ```
 
+### Publish to GitHub on Windows
+
+If Git reports `SEC_E_NO_CREDENTIALS` or Git Credential Manager cannot use Windows Credential Manager, run:
+
+```powershell
+.\publish.ps1
+```
+
+The script uses Git's OpenSSL TLS backend and a project-local credential store. It never contains a token. For a fresh machine, authenticate with Git Credential Manager (`git-credential-manager github login`) or use the GitHub web upload flow. See [GitHub authentication](https://docs.github.com/en/get-started/git-basics/set-up-git#authenticating-on-the-command-line), [Git Credential Manager credential stores](https://github.com/git-ecosystem/git-credential-manager/blob/main/docs/credstores.md), and [Git http.sslBackend](https://git-scm.com/docs/git-config#Documentation/git-config.txt-httpsslBackend).
+
 Load `dist/` from `chrome://extensions` with Developer mode -> Load unpacked. Open the side panel, visit a documentation page, and click Capture.
 
 ## Engineering notes
