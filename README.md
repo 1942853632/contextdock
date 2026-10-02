@@ -2,6 +2,10 @@
 
 ContextDock is a local-only Chrome Manifest V3 extension that turns the active webpage or selected text into a clean, cited and privacy-filtered context pack for ChatGPT, Claude, Copilot, and other agent workflows.
 
+## Interview-ready engineering story
+
+ContextDock is a browser data pipeline, not a prompt box: capture, normalize, redact, score, chunk, persist and export are explicit stages with deterministic outputs. That makes the project easy to demo and gives a concrete discussion surface for ETL, privacy and agent context-window design.
+
 ## Why this project
 
 Copying a whole webpage into an AI tool creates noise, loses the source URL, duplicates navigation, and makes prompts hard to reproduce. ContextDock treats web context as a local data pipeline:
@@ -23,6 +27,13 @@ The extension does not call a model or upload page content, so it has no API cos
 - Explainable quality score: content size, headings, code blocks, duplicate ratio and warnings
 - Redacts common emails, phone numbers, bearer tokens, JWTs, API keys and private-key blocks before storage/export
 - Saves the newest 20 packs locally with restore, delete and clear-history controls
+
+## Repository map
+
+- `src/pipeline.ts`: pure context transformation pipeline
+- `src/content.ts`: selection and readable-page adapter
+- `src/sidepanel.ts`: history, scoring and export UI
+- `tests/`: pipeline and redaction regressions
 - Versioned JSON (`schemaVersion: 1`) and cited Markdown exports
 
 ## Development
